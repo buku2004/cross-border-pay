@@ -12,8 +12,6 @@ import { getExchangeRates, convertCurrency } from '@/lib/api';
 import { ethers } from 'ethers';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import transactionsData from '../public/transactions.json';
-import Image from 'next/image';
 import CryptoRates from './CryptoRates';
 
 export default function PaymentPlatform() {
@@ -161,11 +159,11 @@ export default function PaymentPlatform() {
   return (
 
   <div className="container mx-auto px-4 pt-8">
-  <header className="mb-8 text-center">
+  <header className="mb-20 text-center ">
   <nav className="fixed top-0 left-0 w-full py-4 px-6 bg-white shadow-md rounded-md border-b-2 z-50">
     <div className="flex justify-between items-center">
       <div className="text-xl font-bold text-black">
-        <Image src='/logo.webp' height={70} width={70} alt="Logo" />
+        CROSS-BORDER PAY
       </div>
       <ul className="flex space-x-6 text-sm font-medium text-gray-700">
         <li className="hover:text-black">
@@ -179,7 +177,9 @@ export default function PaymentPlatform() {
         </li>
       </ul>
       <button className="px-4 py-2 border border-black rounded hover:bg-black hover:text-white transition-all duration-200">
-        CONTACT
+        <a href='mailto:0.krishna1120@gmail.com'>
+          CONTACT
+        </a>
       </button>
     </div>
   </nav>
@@ -395,7 +395,7 @@ export default function PaymentPlatform() {
         {/* Left Section: Links */}
         <div className="flex flex-col md:flex-row items-center gap-4">
           <a
-            href="https://github.com/your-username"
+            href="https://github.com/buku2004/cross-crypto-platform"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
@@ -403,7 +403,7 @@ export default function PaymentPlatform() {
             GitHub
           </a>
           <a
-            href="https://linkedin.com/in/your-username"
+            href="https://linkedin.com/in/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
