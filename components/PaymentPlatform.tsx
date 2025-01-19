@@ -63,46 +63,62 @@ export default function PaymentPlatform() {
   const handleCreateWallet = async () => {
     try {
       const wallet = await createWallet();
-      setNewWalletInfo(wallet);
+      if (!wallet || !wallet.address || !wallet.privateKey || !wallet.mnemonic) {
+        throw new Error('Invalid wallet data');
+      }
+      setNewWalletInfo({
+        address: wallet.address,
+        privateKey: wallet.privateKey,
+        mnemonic: wallet.mnemonic || '', // Provide an empty string if mnemonic is undefined
+      });
       setShowNewWallet(true);
       toast.success('New wallet created successfully');
     } catch (error) {
       toast.error('Failed to create wallet');
+      console.error(error);  // Log the error for debugging purposes
     }
   };
+  
 
   const handleSendPayment = async () => {
     if (!walletInfo.signer || !amount || !recipientAddress) {
       toast.error('Please fill in all fields and connect wallet');
       return;
     }
-
+  
     try {
       const ethAmount = convertCurrency(
         parseFloat(amount),
         exchangeRates[selectedCurrency],
         1
       ).toString();
-
+  
+      // Send the payment
       const tx = await sendPayment(walletInfo.signer, recipientAddress, ethAmount);
-      
-      setTransactions([
-        {
-          hash: tx.hash,
-          from: walletInfo.address,
-          to: recipientAddress,
-          amount,
-          currency: selectedCurrency,
-          timestamp: new Date().toISOString(),
-        },
-        ...transactions,
-      ]);
-
-      toast.success('Payment sent successfully');
+  
+      if (tx && tx.hash) {
+        setTransactions([
+          {
+            hash: tx.hash,
+            from: walletInfo.address,
+            to: recipientAddress,
+            amount,
+            currency: selectedCurrency,
+            timestamp: new Date().toISOString(),
+          },
+          ...transactions,
+        ]);
+  
+        toast.success('Payment sent successfully');
+      } else {
+        toast.error('Transaction failed: No transaction hash');
+      }
+  
       setAmount('');
       setRecipientAddress('');
     } catch (error) {
       toast.error('Failed to send payment');
+      console.error(error);
     }
   };
 
