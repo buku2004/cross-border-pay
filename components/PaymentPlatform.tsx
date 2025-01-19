@@ -13,6 +13,7 @@ import { ethers } from 'ethers';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import transactionsData from '../public/transactions.json';
+import Image from 'next/image';
 import CryptoRates from './CryptoRates';
 
 export default function PaymentPlatform() {
@@ -128,7 +129,7 @@ export default function PaymentPlatform() {
   <nav className="fixed top-0 left-0 w-full py-4 px-6 bg-white shadow-md rounded-md border-b-2 z-50">
     <div className="flex justify-between items-center">
       <div className="text-xl font-bold text-black">
-        <img src='/logo.webp' height={70} width={70} alt="Logo" />
+        <Image src='/logo.webp' height={70} width={70} alt="Logo" />
       </div>
       <ul className="flex space-x-6 text-sm font-medium text-gray-700">
         <li className="hover:text-black">
