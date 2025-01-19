@@ -11,6 +11,9 @@ import { connectWallet, sendPayment, createWallet } from '@/lib/web3';
 import { getExchangeRates, convertCurrency } from '@/lib/api';
 import { ethers } from 'ethers';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import transactionsData from '../public/transactions.json';
+import Image from 'next/image';
 import CryptoRates from './CryptoRates';
 
 export default function PaymentPlatform() {
@@ -78,33 +81,40 @@ export default function PaymentPlatform() {
   const handleCreateWallet = async () => {
     try {
       const wallet = await createWallet();
+      if (!wallet || !wallet.address || !wallet.privateKey || !wallet.mnemonic) {
+        throw new Error('Invalid wallet data');
+      }
       setNewWalletInfo({
-        ...wallet,
-        mnemonic: wallet.mnemonic || '',
+        address: wallet.address,
+        privateKey: wallet.privateKey,
+        mnemonic: wallet.mnemonic || '', // Provide an empty string if mnemonic is undefined
       });
       setShowNewWallet(true);
       toast.success('New wallet created successfully');
     } catch (error) {
       toast.error('Failed to create wallet');
+      console.error(error);  // Log the error for debugging purposes
     }
   };
+  
 
   const handleSendPayment = async () => {
     if (!walletInfo.signer || !amount || !recipientAddress) {
       toast.error('Please fill in all fields and connect wallet');
       return;
     }
-
+  
     try {
       const ethAmount = convertCurrency(
         parseFloat(amount),
         exchangeRates[selectedCurrency],
         1
       ).toString();
-
+  
+      // Send the payment
       const tx = await sendPayment(walletInfo.signer, recipientAddress, ethAmount);
-      
-      if (tx) {
+ 
+      if (tx && tx.hash) {
         setTransactions([
           {
             hash: tx.hash,
@@ -116,13 +126,17 @@ export default function PaymentPlatform() {
           },
           ...transactions,
         ]);
+  
+        toast.success('Payment sent successfully');
+      } else {
+        toast.error('Transaction failed: No transaction hash');
       }
-
-      toast.success('Payment sent successfully');
+  
       setAmount('');
       setRecipientAddress('');
     } catch (error) {
       toast.error('Failed to send payment');
+      console.error(error);
     }
   };
 
@@ -145,43 +159,31 @@ export default function PaymentPlatform() {
   }, [amount, selectedNetwork, selectedCurrency, exchangeRates]);
 
   return (
-    <div className="container mx-auto px-4 pt-8">
-        <header className="mb-8 text-center">
-      
-      <nav className="flex justify-between items-center py-4 px-6 bg-white shadow-md">
-        <div className="text-xl font-bold text-black">
-          CROSS-CRYPTO-PLATFORM
-        </div>
-        <ul className="flex space-x-6 text-sm font-medium text-gray-700">
-          <li className="hover:text-black">
-            <a href="#home">Home</a>
-          </li>
-          <li className="hover:text-black">
-            <a href="#about">About</a>
-          </li>
-          <li className="hover:text-black">
-            <a href="#services">Services</a>
-          </li>
-          <li className="hover:text-black">
-            <a href="#team">Team</a>
-          </li>
-          <li className="hover:text-black relative group">
-            <a href="#more">More</a>
-            <ul className="absolute hidden group-hover:block bg-white shadow-lg mt-2 rounded">
-              <li className="px-4 py-2 hover:bg-gray-100">
-                <a href="#option1">Option 1</a>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-100">
-                <a href="#option2">Option 2</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-        <button className="px-4 py-2 border border-black rounded hover:bg-black hover:text-white transition-all duration-200">
-          CONTACT
-        </button>
-      </nav>
-        </header>
+
+  <div className="container mx-auto px-4 pt-8">
+  <header className="mb-8 text-center">
+  <nav className="fixed top-0 left-0 w-full py-4 px-6 bg-white shadow-md rounded-md border-b-2 z-50">
+    <div className="flex justify-between items-center">
+      <div className="text-xl font-bold text-black">
+        <Image src='/logo.webp' height={70} width={70} alt="Logo" />
+      </div>
+      <ul className="flex space-x-6 text-sm font-medium text-gray-700">
+        <li className="hover:text-black">
+          <a href="/">Home</a>
+        </li>
+        <li className="hover:text-black">
+          <Link href="/about-team">About</Link>
+        </li>
+        <li className="hover:text-black">
+          <Link href="/about-team">Team</Link>
+        </li>
+      </ul>
+      <button className="px-4 py-2 border border-black rounded hover:bg-black hover:text-white transition-all duration-200">
+        CONTACT
+      </button>
+    </div>
+  </nav>
+</header>
 
       <div className="px-8 lg:px-16 py-8">
   <div className="grid gap-8 md:grid-cols-2 grid-auto-rows-[minmax(0,_1fr)]">
